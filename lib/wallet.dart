@@ -13,10 +13,14 @@ class _WalletState extends State<Wallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          balanceCard(context),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            balanceCard(context),
+            favText(),
+            cryptoTrend(context),
+          ],
+        ),
       ),
     );
   }
@@ -74,6 +78,53 @@ class _WalletState extends State<Wallet> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget favText() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          Text(
+            'FAVOURITE',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Spacer(),
+          IconButton(
+            icon: Icon(Icons.more_horiz),
+            onPressed: () {
+              print(Colors.accents.length);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget cryptoTrend(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.3,
+      child: ListView.builder(
+        itemCount: Colors.accents.length,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: double.infinity,
+              width: MediaQuery.of(context).size.width * 0.4,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.accents[index],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
