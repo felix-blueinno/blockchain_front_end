@@ -52,7 +52,6 @@ class _ChainState extends State<Chain> {
                 controlsBuilder: (_, __) => const SizedBox(),
                 currentStep: _currentStep,
                 onStepTapped: (index) => setState(() => _currentStep = index),
-                type: StepperType.horizontal,
               );
             } catch (e) {
               return Center(child: Text('Error: ${e.toString()}'));
@@ -91,7 +90,7 @@ class _ChainState extends State<Chain> {
 
       final step = Step(
         isActive: _currentStep == steps.length,
-        title: Text('Block #${steps.length}'),
+        title: Text('Block #${steps.length + 1}'),
         subtitle: Text(formattedDate),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
