@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +7,7 @@ import 'dashboard.dart';
 
 main() {
   runApp(
-    MaterialApp(
+    const MaterialApp(
       home: LoginPage(),
     ),
   );
@@ -39,11 +37,11 @@ class _LoginPageState extends State<LoginPage> {
                   'https://www.blueinnotechnology.com/wp-content/uploads/2022/03/Blueinno_logo_2020_v2.png'),
               TextField(
                 controller: usernameController,
-                decoration: InputDecoration(labelText: 'Username'),
+                decoration: const InputDecoration(labelText: 'Username'),
               ),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
               ),
               Row(
@@ -51,12 +49,12 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   TextButton(
                     onPressed: () => signInUp(endpoint: 'create_user'),
-                    child: Text('Sign up'),
+                    child: const Text('Sign up'),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: () => signInUp(endpoint: 'login'),
-                    child: Text('Sign in'),
+                    child: const Text('Sign in'),
                   ),
                 ],
               ),
@@ -80,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashBoard()),
+          MaterialPageRoute(builder: (context) => const DashBoard()),
         );
       } else {
         showDialog(
