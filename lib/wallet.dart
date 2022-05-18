@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Wallet extends StatefulWidget {
   const Wallet({Key? key}) : super(key: key);
@@ -54,14 +57,22 @@ class _WalletState extends State<Wallet> {
               ],
             ),
             SizedBox(height: 16),
-            Text(
-              '\$12,345,678',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                //       color: Colors.white,
-              ),
-            ),
+            StreamBuilder<http.Response>(
+                stream: balanceStream(),
+                builder: (context, response) {
+                  if (response.hasData) {
+                    final data = jsonDecode(response.data!.body);
+                    return Text(
+                      '\$${data['balance']}',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  } else {
+                    return Text('Checking Your Balance...');
+                  }
+                }),
             SizedBox(height: 16),
             Row(
               children: [
@@ -82,6 +93,17 @@ class _WalletState extends State<Wallet> {
     );
   }
 
+  Stream<http.Response> balanceStream() {
+    return Stream.periodic(const Duration(seconds: 5)).asyncMap((_) async {
+      var url = Uri.parse('https://Blockchain.felixwong6.repl.co/get_balance');
+      var headers = {'Content-Type': 'application/json'};
+      var body = jsonEncode({'username': 'felix', 'password': 12345678});
+
+      final resp = await http.post(url, headers: headers, body: body);
+      return resp;
+    });
+  }
+
   Widget favText() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -97,9 +119,7 @@ class _WalletState extends State<Wallet> {
           Spacer(),
           IconButton(
             icon: Icon(Icons.more_horiz),
-            onPressed: () {
-              print(Colors.accents.length);
-            },
+            onPressed: () {},
           ),
         ],
       ),
