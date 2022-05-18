@@ -99,7 +99,13 @@ class _WalletState extends State<Wallet> {
       var headers = {'Content-Type': 'application/json'};
       var body = jsonEncode({'username': 'felix', 'password': 12345678});
 
-      final resp = await http.post(url, headers: headers, body: body);
+      final resp = await http
+          .post(
+            url,
+            headers: headers,
+            body: body,
+          )
+          .timeout(const Duration(seconds: 5));
       return resp;
     });
   }

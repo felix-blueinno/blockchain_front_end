@@ -11,6 +11,7 @@ class Chain extends StatefulWidget {
 }
 
 class _ChainState extends State<Chain> {
+  List<Step> steps = [];
   int _currentStep = 0;
   int prevChainLength = 0;
   Key stepperKey = UniqueKey();
@@ -30,43 +31,42 @@ class _ChainState extends State<Chain> {
       body: StreamBuilder<http.Response>(
         stream: chainStream(),
         builder: (context, response) {
-          if (response.hasError) {
-            return Center(child: Text('Error: ${response.error}'));
-          }
-          if (response.hasData) {
+          if (response.hasData && response.data!.statusCode == 200) {
             try {
               Map<String, dynamic> json = jsonDecode(response.data!.body);
-              final List<Step> steps = generateSteps(json);
+              steps = generateSteps(json);
 
               if (prevChainLength != steps.length) {
                 prevChainLength = steps.length;
                 stepperKey = UniqueKey();
               }
-
-              return Stepper(
-                /// Use the same key to prevent stepper repaint every frame
-                /// this solves issue of stepper crashing when steps amount changes
-                /// https://github.com/flutter/flutter/issues/27187
-                key: stepperKey,
-                steps: steps,
-                controlsBuilder: (_, __) => const SizedBox(),
-                currentStep: _currentStep,
-                onStepTapped: (index) => setState(() => _currentStep = index),
-              );
             } catch (e) {
-              return Center(child: Text('Error: ${e.toString()}'));
+              print(e);
             }
           }
-          return const Center(child: CircularProgressIndicator());
+
+          return steps.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : Stepper(
+                  /// Use the same key to prevent stepper repaint every frame
+                  /// this solves issue of stepper crashing when steps amount changes
+                  /// https://github.com/flutter/flutter/issues/27187
+                  key: stepperKey,
+                  steps: steps,
+                  controlsBuilder: (_, __) => const SizedBox(),
+                  currentStep: _currentStep,
+                  onStepTapped: (index) => setState(() => _currentStep = index),
+                );
         },
       ),
     );
   }
 
   Stream<http.Response> chainStream() {
-    return Stream.periodic(const Duration(seconds: 5)).asyncMap((_) async =>
-        await http
-            .get(Uri.parse('https://Blockchain.felixwong6.repl.co/chain')));
+    return Stream.periodic(const Duration(seconds: 5))
+        .asyncMap((_) async => await http
+            .get(Uri.parse('https://Blockchain.felixwong6.repl.co/chain')))
+        .timeout(const Duration(seconds: 5));
   }
 
   List<Step> generateSteps(Map<String, dynamic> json) {
