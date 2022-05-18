@@ -12,6 +12,8 @@ class Chain extends StatefulWidget {
 
 class _ChainState extends State<Chain> {
   int _currentStep = 0;
+  int prevChainLength = 0;
+  Key stepperKey = UniqueKey();
   bool isPublic = false;
 
   @override
@@ -32,15 +34,29 @@ class _ChainState extends State<Chain> {
             return Center(child: Text('Error: ${response.error}'));
           }
           if (response.hasData) {
-            Map<String, dynamic> json = jsonDecode(response.data!.body);
+            try {
+              Map<String, dynamic> json = jsonDecode(response.data!.body);
+              final List<Step> steps = generateSteps(json);
 
-            final List<Step> steps = generateSteps(json);
-            return Stepper(
-              steps: steps,
-              controlsBuilder: (_, __) => const SizedBox(),
-              currentStep: _currentStep,
-              onStepTapped: (index) => setState(() => _currentStep = index),
-            );
+              if (prevChainLength != steps.length) {
+                prevChainLength = steps.length;
+                stepperKey = UniqueKey();
+              }
+
+              return Stepper(
+                /// Use the same key to prevent stepper repaint every frame
+                /// this solves issue of stepper crashing when steps amount changes
+                /// https://github.com/flutter/flutter/issues/27187
+                key: stepperKey,
+                steps: steps,
+                controlsBuilder: (_, __) => const SizedBox(),
+                currentStep: _currentStep,
+                onStepTapped: (index) => setState(() => _currentStep = index),
+                type: StepperType.horizontal,
+              );
+            } catch (e) {
+              return Center(child: Text('Error: ${e.toString()}'));
+            }
           }
           return const Center(child: CircularProgressIndicator());
         },
