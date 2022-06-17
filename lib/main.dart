@@ -1,17 +1,16 @@
 import 'dart:convert';
+import 'package:blockchain_front_end/shared_variables.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'dashboard.dart';
 
-main() {
-  runApp(
-    const MaterialApp(
-      home: LoginPage(),
-    ),
-  );
-}
+main() => runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const LoginPage(),
+      theme: ThemeData(useMaterial3: true),
+    ));
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -21,27 +20,27 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var usernameController = TextEditingController();
-  var passwordController = TextEditingController();
+  String username = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8,
+        child: FractionallySizedBox(
+          widthFactor: 0.8,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.network(
                   'https://www.blueinnotechnology.com/wp-content/uploads/2022/03/Blueinno_logo_2020_v2.png'),
               TextField(
-                controller: usernameController,
                 decoration: const InputDecoration(labelText: 'Username'),
+                onChanged: (String value) => username = value,
               ),
               TextField(
-                controller: passwordController,
                 decoration: const InputDecoration(labelText: 'Password'),
+                onChanged: (String value) => password = value,
                 obscureText: true,
               ),
               Row(
@@ -65,17 +64,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  signInUp({required String endpoint}) {
-    var bytes = utf8.encode(passwordController.text);
+  void signInUp({required String endpoint}) {
+    var bytes = utf8.encode(password);
     var digest = sha256.convert(bytes);
 
     var url = Uri.parse('https://Blockchain.felixwong6.repl.co/$endpoint');
     var headers = {'Content-Type': 'application/json'};
-    var body = jsonEncode(
-        {'username': usernameController.text, 'password': digest.toString()});
+    var body =
+        jsonEncode({'username': username, 'password': digest.toString()});
 
     http.post(url, headers: headers, body: body).then((response) {
       if (response.statusCode == 200) {
+        SharedVars.username = username;
+        SharedVars.password = digest.toString();
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const DashBoard()),
