@@ -12,7 +12,10 @@ class _HistoryState extends State<History> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('History'),
+        child: Text(
+          'History',
+          style: Theme.of(context).textTheme.headline1,
+        ),
       ),
     );
   }
