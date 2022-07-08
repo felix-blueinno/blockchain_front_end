@@ -18,7 +18,10 @@ class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[pageIndex],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: pages[pageIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: pageIndex,
         showUnselectedLabels: false,
